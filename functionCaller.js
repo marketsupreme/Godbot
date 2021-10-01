@@ -1,7 +1,5 @@
 const music = require("./commands/music.js")
 
-
-
 module.exports = {
   name: 'funcCall',
   funcCall(...args) {
@@ -27,6 +25,10 @@ module.exports = {
         break;
       case "volume":
         music.volume(args[1])
+        break;
+      case "queue":
+      case "q":
+        music.getQueue(args[1])
         break;
     }
   },

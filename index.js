@@ -5,10 +5,6 @@ const fs = require("fs");
 const music = require("./commands/music.js")
 const funcCall = require("./functionCaller.js")
 
-var x = music.downloadYoutubemp3("2WPCLda_erI")
-console.log(x)
-
-return 
 // Create a new client instance
 const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS', 'GUILD_MESSAGE_REACTIONS'] });
 
@@ -33,29 +29,46 @@ for (const file of eventFiles) {
 }
 
 // listening for commands
-client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+client.on('interactionCreate', interaction => {
+	if (interaction.isButton()) {
+    	if (interaction.customId.match("[0-9]")) {
+		
+			let youtubeSearchResultRegex = String.raw`[\d]+. \[.*\]\((.*)\)`
 
-	const { commandName } = interaction;
+			let messageField = interaction.message.embeds[0].fields[parseInt(interaction.customId)]
+			let regexMatch = messageField.value.match(youtubeSearchResultRegex)
+
+			if (regexMatch) {
+				let newMessage = interaction.message
+				newMessage.content = regexMatch[1]
+				music.play(newMessage)
+			}
+			
+			interaction.message.delete().then(msg => console.log("Deleted embedded message"))
+			music.makeMessageButtons(interaction.message)
+		}
+
+		else {
+
+			let buttonNum = interaction.customId
+			switch (buttonNum) {
+				case "play":
+					music.resume(interaction.message)
+					break;
+				case "pause":
+					music.pause(interaction.message)
+					break;
+				case "stop":
+					music.stop(interaction.message)
+					break;
+				case "skip":
+					music.skip(interaction.message)
+					break;
+			}
+
+		}
+
+	}
 });
 
-
-
-// 	if (commandName === 'ping') {
-// 		await interaction.reply('Pong!');
-// 	} else if (commandName === 'server') {
-// 		await interaction.reply('Server info.');
-// 	} else if (commandName === 'user') {
-// 		await interaction.reply('User info.');
-// 	} else if (commandName === 'play') {
-// 		await music.play(
-//             interaction.options.getString('songname').replace(/['"]+/g, ''), //songname
-//             client.channels.cache.get(interaction.channelId), //textChannel
-//             client.channels.cache.get(interaction.member.voice.channel.id), //voiceChannel
-//             client //client
-//         );
-//     }
-// });
-
-// Login to Discord with your client's token
 client.login(token);

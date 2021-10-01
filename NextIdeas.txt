@@ -1,0 +1,11 @@
+queue stuff:
+  q command
+    embedded message with buttons ?
+  popping pushing
+  adding to and removing from at certain points in queue
+  
+now playing song
+  add buttons
+
+create thread?
+  

@@ -1,49 +1,72 @@
 const Discord = require('discord.js');
+const { yt_API } = require('../config.json');
 const ytdl = require('ytdl-core')
-const ytmp3 = require('youtube-mp3-downloader')
+const ytstream = require('youtube-audio-stream')
 const scdl = require('soundcloud-downloader').default
 const ytsrch = require('youtube-search')
 const fs = require('fs')
 const util = require('util')
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice')
 const { VoiceConnectionStatus, AudioPlayerStatus } = require('@discordjs/voice');
-
+const { MessageEmbed } = require('discord.js');
 const { demuxProbe, createAudioResource } = require('@discordjs/voice');
 const { createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
+const { MessageActionRow, MessageButton } = require('discord.js');
 
+
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 class ChannelInfo {
-    constructor(voiceChannel, textChannel, connection) {
+    constructor(voiceChannel, textChannel) {
         this.voiceChannel = voiceChannel,
         this.textChannel = textChannel,
-        this.player = null,
-        this.connection = connection,
-        this.queue = []
+        this.queue = [],
+        this.nowPlaying = null
+
+        let guildId = voiceChannel.guild.id
+        var connection = joinVoiceChannel({
+            channelId: voiceChannel.id,
+            guildId: guildId,
+            adapterCreator: voiceChannel.guild.voiceAdapterCreator
+        });
+
+        connection.on(VoiceConnectionStatus.Disconnected, (oldstate, newstate) => {
+            channelMap[guildId]?.stop()
+            delete channelMap[guildId]
+        })
+
+        let player = createAudioPlayer();
+        this.player = player;
+        connection.subscribe(player);
     }
 
     stop() {
-        this.player.stop()
-        this.connection.destroy()
+        try {
+            this.player.stop()
+            this.connection.destroy()
+        } catch { }
     }
 
     queueIsEmpty() {
         return this.queue.length == 0
     }
 
-    addToQueue(songName) {
-        this.queue.push(songName)
+    addToQueue(songObject) {
+        this.queue.push(songObject)
     }
 
-    getNextSongName() {        
-        return this.queue[0]
-    }
-
-    popNextSongName() {
+    popNextsongObject() {
         return this.queue.shift()
     }
 
     removeFromQueue(position) {
         this.queue.splice(position-1, 1)
+    }
+
+    playNewSong(resource) {
+        this.player.play(resource)
     }
 }
 
@@ -70,19 +93,8 @@ module.exports = {
         channelMap[voiceChannel.guild.id]?.player?.unpause()
 
         try {
-            var connection = joinVoiceChannel({
-                channelId: voiceChannel.id,
-                guildId: voiceChannel.guild.id,
-                adapterCreator: voiceChannel.guild.voiceAdapterCreator
-            });
-
-            channelInfo = new ChannelInfo(voiceChannel, textChannel, connection)
+            let channelInfo = new ChannelInfo(voiceChannel, textChannel)
             channelMap[message.guildId] = channelInfo
-
-            connection.on(VoiceConnectionStatus.Disconnected, (oldstate, newstate) => {
-                channelMap[guildId]?.stop()
-                delete channelMap[guildId]
-            })
 
             if (songname.includes('youtube.com')) {
                 channelInfo.addToQueue(songname)
@@ -91,23 +103,24 @@ module.exports = {
                 channelInfo.addToQueue(songname)
             }
             else {
-                this.ytsearch(songname);
+                this.ytsearch(message, textChannel);
                 return;
+            }
+            
+            console.log(channelInfo?.player?._state.status)
+            if (channelInfo?.player?._state.status != AudioPlayerStatus.Playing) {
+                this.playNextSong(voiceChannel)
+                message.react("🎶")
+            }
+            else {
+                message.reply("Your song is in position " + channelInfo.queue.length + 1 + " in queue")
+                message.react("✔")
             }
         }
         catch (error) {
             console.error(error)
             console.log('There was an error playing the requested song: ' + error);
             return textChannel.send('There was an error playing the requested song');
-        }
-
-        if (channelInfo?.player?._state.status != AudioPlayerStatus.Playing) {
-            this.playNextSong(voiceChannel)
-            message.react("🎶")
-        }
-        else {
-            message.reply("Your song is in position " + channelInfo.queue.length + 1 + " in queue")
-            message.react("✔")
         }
     },
 
@@ -128,7 +141,8 @@ module.exports = {
             channelInfo.stop()
             message.react("🛑")
         }
-        catch {
+        catch (err) {
+            console.log(err)
             message.react('❌')
         }
     },
@@ -139,7 +153,7 @@ module.exports = {
         channelInfo?.player?.pause();
         message.react("⏸")
         }
-        catch {
+        catch (err) {
             message.react('❌')
         }
     },
@@ -150,7 +164,8 @@ module.exports = {
         channelInfo?.player?.unpause();
         message.react("▶")
         }
-        catch {
+        catch (err) {
+            console.log(err)
             message.react('❌')
         }
     },
@@ -161,41 +176,56 @@ module.exports = {
         //message.member.voice.channel.dispatcher.setVolume(Math.min(2, messageVol / 100));
     },
 
-    ytsearch(message) {
-        try{
-        var searchOptions = {
-            maxResults:5,
-            key: 'AIzaSyBvA15uusyx2YAPY0aq9A7y67jBMVQP-JU',
-            videoDuration: 'any',
-            type: 'video'
-        };
-    
-        searchString = message.content
-    
-        ytsrch(searchString, searchOptions, function(err, results) {
-            if (err) {
-                return console.error(err);
-            }
+    ytsearch(message, textChannel) {
+        try {
+            var searchOptions = {
+                maxResults:5,
+                key: yt_API,
+                videoDuration: 'any',
+                type: 'video'
+            };
+        
+            searchString = message.content
+        
+            ytsrch(searchString, searchOptions, function(err, results) {
+                if (err) {
+                    return console.error(err);
+                }
 
-            let i = 0;
-            let embed = new Discord.MessageEmbed();
+                let i = 0;
+                let embed = new Discord.MessageEmbed();
 
-            embed.setAuthor(message.author.username, message.author.avatarURL());
-            embed.setDescription('Send a message with the number corresponding to the video you want');
-            
-            //console.dir(results)
+                embed.setAuthor(message.member.nickname || message.author.username, message.author.avatarURL());
+                embed.setDescription('Send a message with the number corresponding to the video you want');
+                
+                //console.dir(results)
 
-            results.forEach(result => {
-                i++;
-                console.log(result.videoDuration)
-                embed.addField('\u200b', i + '. [' + result.title + '](' + result.link + ')', false);
+                results.forEach(result => {
+                    i++;
+                    embed.addField('\u200b', i + '. [' + result.title + '](' + result.link + ')', false);
+                })
+
+                let buttonRow = new MessageActionRow();
+                emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+                
+                for (let j = 0; j < i; j++) {
+                    buttonRow.addComponents(
+                        new MessageButton()
+                            .setCustomId((j).toString())
+                            .setLabel("")
+                            .setStyle("SECONDARY")
+                            .setEmoji(emojis[j])
+                    );
+                }
+
+                textChannel.send({embeds: [embed], components: [buttonRow]}).then(sentMsg => {
+                    
+                });
+
             })
-
-            textChannel.send(embed);
-        })
         }
-        catch {
-        message.react('❌')
+        catch (err) {
+            message.react('❌')
         }
     },
 
@@ -205,22 +235,24 @@ module.exports = {
         const { stream, type } = await demuxProbe(readableStream);
         return createAudioResource(stream, { inputType: type });
         }
-        catch {
+        catch (err) {
             message.react('❌')
         }
     },
 
     async getNextSongStream(channelInfo) {
         try {
-            let link = channelInfo?.popNextSongName()
-            console.log(link)
-            if (link.includes('youtube.com'))
-                var strm = this.downloadYoutubemp3(link)
-                //var strm = ytdl(link, {container: 'webm'});
-            else if (link.includes('soundcloud.com'))
-                var strm = await scdl.download(link).then(stream => stream)
+            let link = channelInfo?.popNextsongObject()
 
+            if (link.includes('youtube.com')) {
+                var strm = ytstream(link)
+                //this.downloadYoutubemp3(link, channelInfo)
+            }
+            else if (link.includes('soundcloud.com')) {
+                var strm = await scdl.download(link).then(stream => stream)
+            }
             var resource = this.probeAndCreateResource(strm, { inlineVolume: true });
+
             //resource.volume.setVolume(0.5)
 
             //console.log(link)
@@ -237,31 +269,15 @@ module.exports = {
     async playNextSong(voiceChannel) {
         try {
             let channelInfo = channelMap[voiceChannel.guild.id]
-            if (channelInfo == null) {
+            if (channelInfo == null || channelInfo == undefined) {
                 console.log("cannot find channel info")
                 return
             }
 
             let resource = await this.getNextSongStream(channelInfo) 
-            //console.log(resource)
             const connection = getVoiceConnection(voiceChannel.guild.id)
 
-            let player = null;
-            if (channelInfo.player == null) {
-                player = createAudioPlayer();
-                channelInfo.player = player;
-
-                this.setupPlayerEvents(player)
-            }
-            else {
-                player = channelInfo.player
-            }
-
-            player.play(resource);
-
-            connection.subscribe(player);
-
-            console.log("player status is " + player._state.status)
+            channelInfo.playNewSong(resource)
         }
         catch (error) {
             //console.error(error)
@@ -283,36 +299,16 @@ module.exports = {
             // });
             console.log('done setting up player events')
         }
-        catch {
+        catch (err) {
             message.react('❌')
         }
     },
 
-    async downloadYoutubemp3(link) {
-        var YD = new ytmp3({
-            "ffmpegPath": "x:/Coding/Discordbot/node_modules/ffmpeg-static/ffmpeg.exe",    // FFmpeg binary location
-            "outputPath": "x:/Coding/Discordbot/temp_mp3/mp3s",       // Output file location (default: the home directory)
-            "youtubeVideoQuality": "highestaudio",  // Desired video quality (default: highestaudio)
-            "queueParallelism": 2,                  // Download parallelism (default: 1)
-            "progressTimeout": 2000,                // Interval in ms for the progress reports (default: 1000)
-            "allowWebm": true                      // Enable download from WebM sources (default: false)
-        });
+    getQueue(channelInfo) {
 
-        if (link.includes('youtube'))
-            videoId = link.substring(link.indexOf("v=") + 2)
-        else
-            videoId = link
-
-        YD.on("error", function(error) {
-            console.log(error);
-        });
-
-        YD.on("finished", function(err, data) {
-            console.log(data.file);
-        });
-        
-        let fileName = await YD.download(videoId).then(data => data.file)
-        return fileName
+        console.log(ChannelInfo.textChannel)
+        // ChannelInfo.textChannel.send(ChannelInfo.queue)
+    
     },
 
     check(message) {
@@ -323,44 +319,45 @@ module.exports = {
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
+
+    makeMessageButtons(message) {
+
+        console.log("making play buttons")
+        let embed = new Discord.MessageEmbed();
+
+        embed.setAuthor(message.member.nickname || message.author.username, message.author.avatarURL());
+        embed.setDescription('Now Playing ');
+        
+        //console.dir(results)
+
+        let buttonRow = new MessageActionRow();
+        emojis = [["play","▶"], ["pause", "⏸"], ["stop", "⏹"], ["skip", "⏭"]]
+        
+        for (let j = 0; j < 3; j++) {
+            buttonRow.addComponents(
+                new MessageButton()
+                    .setCustomId((emojis[j][0]).toString())
+                    .setLabel("")
+                    .setStyle("SECONDARY")
+                    .setEmoji(emojis[j][1])
+            );
+        }
+
+        message.channel.send({embeds: [embed], components: [buttonRow]}).then(sentMsg => {
+        
+        });
+    
+    },
 }
 
 
-
-
-
-
-
-/*        function shuffle(queue) {
-            var j, x, i;
-            for (i = queue.length - 1; i > 0; i--) {
-                j = Math.floor(Math.random() * (i + 1));
-                x = queue[i];
-                queue[i] = queue[j];
-                queue[j] = x;
-            }
-            return queue;
-        }
-
-
-
-
-
-const dispatcher = connection.play(strm)
-        .on('finish', async () => {
-            if (queue.length == 0) {
-                await this.sleep(30000)
-                if (queue.length == 0)
-                    connection.channel.leave();
-            }
-            else {
-                this.playNextSong(voiceChannel)
-            }
-            console.log('exiting')
-        })
-        .on('error', error => {
-            voiceChannel.leave();
-            console.log("play error: " + error);
-        });
-        dispatcher.setVolume(25 / 100);
-        */
+// /*        function shuffle(queue) {
+//             var j, x, i;
+//             for (i = queue.length - 1; i > 0; i--) {
+//                 j = Math.floor(Math.random() * (i + 1));
+//                 x = queue[i];
+//                 queue[i] = queue[j];
+//                 queue[j] = x;
+//             }
+//             return queue;
+//         }

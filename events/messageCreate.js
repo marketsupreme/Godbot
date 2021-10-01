@@ -38,6 +38,10 @@ module.exports = {
         case "volume":
             funcCall(messageCommand, message)
             break;
+        case "queue":
+        case "q":
+            funcCall(messageCommand, message)
+            break;
     }
 	},
 };
