@@ -11,10 +11,19 @@ play takes youtube and soundcloud links, or strings that will default search you
 
   ![image](https://user-images.githubusercontent.com/61099229/135664846-f43a04ba-bb9e-4e39-8619-8977ee1fc46a.png)
     
+Then select from the buttons which link you would like to be played.
+
+An embedded message will return, with play buttons attached.
+
+   ![image](https://user-images.githubusercontent.com/61099229/135665713-9fc4d74d-f408-4f41-87f4-904d158fb0b6.png)
+   
+Each button functions as intended, where pause will pause the song, play with resume, stop will end the song, and skip will skip to the next song in the queue, or stop the song playing if the queue is empty.
+
+
+### 2. Pause
+    !ps, !pause
+Pause will pause the currently playing song.
+#### Example
+    !ps
+    
 Then select from the buttons which link you would like to be played
-
-##### pause - !ps, !pause
-
-stop - !stop
-skip - !skip
-que
