@@ -5,10 +5,9 @@ A new music-bot for discord, featuring the new button functionality. No more com
 
 ### 1. Play - !p, !play
 play takes youtube and soundcloud links, or strings that will default search youtube and provide 5 results.
-    > Example
-    > !p Pocketful of Sunshine
 
-
+#### Example
+    !p Pocketful of Sunshine
 
   ![image](https://user-images.githubusercontent.com/61099229/135664846-f43a04ba-bb9e-4e39-8619-8977ee1fc46a.png)
     
