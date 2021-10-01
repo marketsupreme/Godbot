@@ -3,8 +3,8 @@ A new music-bot for discord, featuring the new button functionality. No more com
 
 ## Commands - Use ! in your channel of choice as the default command script.
 
-### play - !p, !play
-  - play takes youtube and soundcloud links, or strings that will default search youtube and provide 5 results.
+### 1. Play - !p, !play
+play takes youtube and soundcloud links, or strings that will default search youtube and provide 5 results.
     > Example
     > !p Pocketful of Sunshine
 
