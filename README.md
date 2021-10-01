@@ -1,9 +1,9 @@
 # Godbot
-A new music-bot for discord, featuring the new button functionality. No more command driven bots when you have buttons!
+A new music-bot for discord that utilizes Discord's new button functionality. Also works with commands.
 
-## Commands - Use ! in your channel of choice as the default command script.
+## 1. Commands - Use ! in your channel of choice as the default command script.
 
-### 1. Play
+### a. Play
     !p, !play
 play takes youtube and soundcloud links, or strings that will default search youtube and provide 5 results.
 #### Example
@@ -20,10 +20,24 @@ An embedded message will return, with play buttons attached.
 Each button functions as intended, where pause will pause the song, play with resume, stop will end the song, and skip will skip to the next song in the queue, or stop the song playing if the queue is empty.
 
 
-### 2. Pause
+### b. Pause
     !ps, !pause
 Pause will pause the currently playing song.
 #### Example
     !ps
-    
-Then select from the buttons which link you would like to be played
+Each time a button is pressed an emote is produced to show the state of the player. Reacts with the ⏸ emote.
+
+
+### c. Skip
+    !skip
+Skips the current song playing, or stops the song if the queue is empty. Reacts with ⏭ emote.
+
+
+### d. Stop
+    !stop
+Stops the current song playing. Reacts with the ⏹ emote.
+
+
+### e. Resume
+    !resume 
+Resumes the song that was paused.
