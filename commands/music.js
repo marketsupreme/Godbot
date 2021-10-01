@@ -45,6 +45,9 @@ class ChannelInfo {
     stop() {
         try {
             this.player.stop()
+        } catch { }
+
+        try {
             this.connection.destroy()
         } catch { }
     }
@@ -93,8 +96,11 @@ module.exports = {
         channelMap[voiceChannel.guild.id]?.player?.unpause()
 
         try {
-            let channelInfo = new ChannelInfo(voiceChannel, textChannel)
-            channelMap[message.guildId] = channelInfo
+            let channelInfo = channelMap[voiceChannel.guild.id]
+            if (channelInfo == undefined) {
+                channelInfo = new ChannelInfo(voiceChannel, textChannel)
+                channelMap[message.guildId] = channelInfo
+            }
 
             if (songname.includes('youtube.com')) {
                 channelInfo.addToQueue(songname)
@@ -112,10 +118,10 @@ module.exports = {
                 this.playNextSong(voiceChannel)
                 message.react("🎶")
             }
-            else {
-                message.reply("Your song is in position " + channelInfo.queue.length + 1 + " in queue")
-                message.react("✔")
-            }
+            // else {
+            //     message.reply("Your song is in position " + channelInfo.queue.length + " in queue")
+            //     message.react("✔")
+            // }
         }
         catch (error) {
             console.error(error)
@@ -131,8 +137,14 @@ module.exports = {
             return
         }
 
-        this.playNextSong(channelInfo.voiceChannel)
-        message.react("⏩")
+        if (channelInfo.queueIsEmpty()){
+            channelInfo.textChannel.send("There is nothing in queue.")
+        }
+        else {
+            this.playNextSong(channelInfo.voiceChannel)
+            message.react("⏩")
+            this.makeMessageButtons(message)
+        }
     },
 
     stop(message) {
@@ -149,9 +161,9 @@ module.exports = {
 
     pause(message) {
         try {
-        channelInfo = channelMap[message.guildId]
-        channelInfo?.player?.pause();
-        message.react("⏸")
+            channelInfo = channelMap[message.guildId]
+            channelInfo?.player?.pause();
+            message.react("⏸")
         }
         catch (err) {
             message.react('❌')
@@ -221,14 +233,12 @@ module.exports = {
                 textChannel.send({embeds: [embed], components: [buttonRow]}).then(sentMsg => {
                     
                 });
-
             })
         }
         catch (err) {
             message.react('❌')
         }
     },
-
 
     async probeAndCreateResource(readableStream) {
         try{
@@ -333,7 +343,8 @@ module.exports = {
         let buttonRow = new MessageActionRow();
         emojis = [["play","▶"], ["pause", "⏸"], ["stop", "⏹"], ["skip", "⏭"]]
         
-        for (let j = 0; j < 3; j++) {
+        for (let j = 0; j < emojis.length; j++) {
+            console.log("button " + j + " added")
             buttonRow.addComponents(
                 new MessageButton()
                     .setCustomId((emojis[j][0]).toString())
@@ -344,9 +355,18 @@ module.exports = {
         }
 
         message.channel.send({embeds: [embed], components: [buttonRow]}).then(sentMsg => {
-        
+            // const reactionFilter = (reaction, user) => true;
+
+            // const reactionCollector = sentMsg.createReactionCollector(backwardsFilter, {time:90000});
+            
+            // reactionCollector.on('collect', (r, user) => {
+            //     try { 
+            //         r.users.remove(user.id) 
+            //         sentMsg.edit(embed)
+            //     } catch { }
+            // })
         });
-    
+        console.log("message sent")
     },
 }
 

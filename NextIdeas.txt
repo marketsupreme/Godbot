@@ -8,4 +8,12 @@ now playing song
   add buttons
 
 create thread?
+
+
+TODO:
+
+-Remove the recreation of now playing
+-Add dropdown of queue
+-Get names of songs when just using a link (cheerio)
+-remove ytsearch replace with cheerio
   
