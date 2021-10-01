@@ -11,7 +11,7 @@ play takes youtube and soundcloud links, or strings that will default search you
 
   ![image](https://user-images.githubusercontent.com/61099229/135664846-f43a04ba-bb9e-4e39-8619-8977ee1fc46a.png)
     
-    > Then select from the buttons which link you would like to be played
+Then select from the buttons which link you would like to be played
 
 ##### pause - !ps, !pause
 
