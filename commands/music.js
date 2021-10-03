@@ -3,7 +3,6 @@ const { yt_API } = require('../config.json');
 const ytdl = require('ytdl-core')
 const ytstream = require('youtube-audio-stream')
 const scdl = require('soundcloud-downloader').default
-const ytsrch = require('youtube-search')
 const fs = require('fs')
 const util = require('util')
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -14,6 +13,10 @@ const { MessageEmbed } = require('discord.js');
 const { demuxProbe, createAudioResource } = require('@discordjs/voice');
 const { createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
 const { MessageActionRow, MessageButton } = require('discord.js');
+const { MessageSelectMenu } = require('discord.js');
+const searchYoutube = require('youtube-search-without-api-key').search;
+const htmlparse = require('../helpers/htmlparse.js')
+const path = require('path')
 
 
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -39,6 +42,7 @@ class ChannelInfo {
 
         let player = createAudioPlayer();
         this.player = player;
+        this.setupPlayerEvents(player)
         connection.subscribe(player);
     }
 
@@ -57,10 +61,16 @@ class ChannelInfo {
     }
 
     addToQueue(songObject) {
-        this.queue.push(songObject)
+        if (this.nowPlaying == null) {
+            this.nowPlaying = songObject
+            this.playNextSong(songObject)
+        }
+        else {
+            this.queue.push(songObject)   
+        }
     }
 
-    popNextsongObject() {
+    popNextSongObject() {
         return this.queue.shift()
     }
 
@@ -69,7 +79,100 @@ class ChannelInfo {
     }
 
     playNewSong(resource) {
-        this.player.play(resource)
+        this.nowPlaying = resource.songObject
+        this.player.play(resource.resource)
+
+        this.textChannel.send("now playing " + this.nowPlaying.title)
+    }
+
+    setupPlayerEvents(player) {
+        try {
+            player.on('error', error => {
+                console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
+                this.nowPlaying = null
+                this.playNextSong()
+            });
+
+            player.on(AudioPlayerStatus.Idle, () => {
+                console.log("idle")
+                this.nowPlaying = null;
+                this.playNextSong()
+            });
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    async probeAndCreateResource(readableStream) {
+        try{
+            const { stream, type } = await demuxProbe(readableStream);
+            return createAudioResource(stream, { inputType: type });
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    async getNextSongStream(songObject) {
+        try {
+            if (!songObject)
+                songObject = this.popNextSongObject()
+
+            if (songObject == undefined)
+                return null
+
+            let url = songObject.url
+
+            if (url.includes('youtube.com')) {
+                var strm = ytstream(url)
+            }
+            else if (url.includes('soundcloud.com')) {
+                var strm = await scdl.download(url).then(stream => stream)
+            }
+            var resource = await this.probeAndCreateResource(strm);
+
+            return { resource: resource, songObject: songObject };
+        }
+        catch (error) {
+            console.log("error in getNextSongStream")
+            console.error(error)
+        }
+    }
+
+    async playNextSong(songObject = null, skip = false) {
+        try {
+            if (this.nowPlaying != null && skip == true) {
+                return
+            }
+
+            let resourceObject = await this.getNextSongStream(songObject) 
+            if (resourceObject == null) {
+                return
+            }
+
+            this.playNewSong(resourceObject)
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    playMp3(songObject) {
+        try {
+            let fileResource = createAudioResource(songObject.url)
+            if (fileResource) {
+                let resourceObject = {
+                    songObject: songObject,
+                    resource: fileResource
+                }
+
+                this.playNewSong(resourceObject)
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
 }
 
@@ -103,7 +206,26 @@ module.exports = {
             }
 
             if (songname.includes('youtube.com')) {
-                channelInfo.addToQueue(songname)
+                htmlparse.getYTvideoId(songname).then((videoId) => {
+                    searchYoutube(videoId.toString()).then((results) => {
+                        let ytVid = results[0]
+                        let videoDurationRegex = ytVid.snippet.duration.match(String.raw`(\d+):\d+:\d+`)
+                        if (videoDurationRegex) {
+                            let videoHours = parseInt(videoDurationRegex[1]) 
+                            if (videoHours && videoHours >= 3) {
+                                message.reply("Cannot play a song greater longer than 3 hours")
+                                return
+                            }
+                        }
+        
+                        var songObject = {
+                            title: ytVid.snippet.title,
+                            url: ytVid.snippet.url
+                        }
+
+                        channelInfo.addToQueue(songObject)
+                    })
+                })
             }
             else if (songname.includes('soundcloud.com')) {
                 channelInfo.addToQueue(songname)
@@ -113,11 +235,12 @@ module.exports = {
                 return;
             }
             
-            console.log(channelInfo?.player?._state.status)
-            if (channelInfo?.player?._state.status != AudioPlayerStatus.Playing) {
-                this.playNextSong(voiceChannel)
-                message.react("🎶")
-            }
+            // console.log(channelInfo?.player?._state.status)
+            // if () {
+            //     this.makeMessageButtons(message)
+    
+            //     message.react("🎶")
+            // }
             // else {
             //     message.reply("Your song is in position " + channelInfo.queue.length + " in queue")
             //     message.react("✔")
@@ -136,12 +259,13 @@ module.exports = {
             message.react('❌')
             return
         }
-
         if (channelInfo.queueIsEmpty()){
-            channelInfo.textChannel.send("There is nothing in queue.")
+            channelInfo.stop()
+            channelInfo.textChannel.send("No more songs in queue.")
+            message.react('⏩')
         }
         else {
-            this.playNextSong(channelInfo.voiceChannel)
+            channelInfo.playNextSong(skip = true)
             message.react("⏩")
             this.makeMessageButtons(message)
         }
@@ -172,9 +296,9 @@ module.exports = {
 
     resume(message) {
         try {
-        channelInfo = channelMap[message.guildId]
-        channelInfo?.player?.unpause();
-        message.react("▶")
+            channelInfo = channelMap[message.guildId]
+            channelInfo?.player?.unpause();
+            message.react("▶")
         }
         catch (err) {
             console.log(err)
@@ -188,137 +312,67 @@ module.exports = {
         //message.member.voice.channel.dispatcher.setVolume(Math.min(2, messageVol / 100));
     },
 
-    ytsearch(message, textChannel) {
+    nowPlaying(message) {
         try {
-            var searchOptions = {
-                maxResults:5,
-                key: yt_API,
-                videoDuration: 'any',
-                type: 'video'
-            };
-        
-            searchString = message.content
-        
-            ytsrch(searchString, searchOptions, function(err, results) {
-                if (err) {
-                    return console.error(err);
-                }
-
-                let i = 0;
-                let embed = new Discord.MessageEmbed();
-
-                embed.setAuthor(message.member.nickname || message.author.username, message.author.avatarURL());
-                embed.setDescription('Send a message with the number corresponding to the video you want');
-                
-                //console.dir(results)
-
-                results.forEach(result => {
-                    i++;
-                    embed.addField('\u200b', i + '. [' + result.title + '](' + result.link + ')', false);
-                })
-
-                let buttonRow = new MessageActionRow();
-                emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
-                
-                for (let j = 0; j < i; j++) {
-                    buttonRow.addComponents(
-                        new MessageButton()
-                            .setCustomId((j).toString())
-                            .setLabel("")
-                            .setStyle("SECONDARY")
-                            .setEmoji(emojis[j])
-                    );
-                }
-
-                textChannel.send({embeds: [embed], components: [buttonRow]}).then(sentMsg => {
-                    
-                });
-            })
+            message.reply(channelMap[message.guildId]?.nowPlaying.url)
         }
         catch (err) {
+            console.log(err)
             message.react('❌')
         }
     },
 
-    async probeAndCreateResource(readableStream) {
-        try{
-        const { stream, type } = await demuxProbe(readableStream);
-        return createAudioResource(stream, { inputType: type });
-        }
-        catch (err) {
-            message.react('❌')
-        }
-    },
-
-    async getNextSongStream(channelInfo) {
-        try {
-            let link = channelInfo?.popNextsongObject()
-
-            if (link.includes('youtube.com')) {
-                var strm = ytstream(link)
-                //this.downloadYoutubemp3(link, channelInfo)
-            }
-            else if (link.includes('soundcloud.com')) {
-                var strm = await scdl.download(link).then(stream => stream)
-            }
-            var resource = this.probeAndCreateResource(strm, { inlineVolume: true });
-
-            //resource.volume.setVolume(0.5)
-
-            //console.log(link)
-            //console.dir(strm)
-
-            return resource;
-        }
-        catch (error) {
-            console.log("error in getNextStream")
-            console.error(error)
-        }
-    },
-
-    async playNextSong(voiceChannel) {
-        try {
-            let channelInfo = channelMap[voiceChannel.guild.id]
-            if (channelInfo == null || channelInfo == undefined) {
-                console.log("cannot find channel info")
+    bob(message) {
+        const bobDir = fs.readdir("bob",(err, files) => {
+            if (err) {
+                console.log(err)
                 return
             }
 
-            let resource = await this.getNextSongStream(channelInfo) 
-            const connection = getVoiceConnection(voiceChannel.guild.id)
+            let randFileNum = Math.floor(Math.random() * files.length)
+            let channelInfo = channelMap[message.guildId]
+            if (!channelInfo) {
+                channelInfo = new ChannelInfo(message.member.voice.channel, message.channel)
+                channelMap[message.guildId] = channelInfo
+            }
 
-            channelInfo.playNewSong(resource)
-        }
-        catch (error) {
-            //console.error(error)
-        }
+            songObject = {
+                title: "BOBB BOP BOBAZOOEEE",
+                url: path.resolve("../bob/" + files[randFileNum])
+            }
+
+            channelInfo?.playMp3(songObject)
+
+        });
     },
 
-    setupPlayerEvents(channelInfo) {
-        try {
-            console.log('setting up player events')
-            let player = channelInfo.player
-            // player.on('error', error => {
-            //     console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
-            //     //player.play(this.getNextSongStream(channelInfo));
-            // });
+    queue(message) {
+        let channelInfo = channelMap[message.guildId]
 
-            // player.on(AudioPlayerStatus.Idle, () => {
-            //     console.log("idle")
-            //     player.play(this.getNextSongStream(channelInfo))
-            // });
-            console.log('done setting up player events')
-        }
-        catch (err) {
-            message.react('❌')
-        }
-    },
+        console.log(channelInfo.queue)
+        let row = new MessageActionRow()
+            .addComponents(
+                new MessageSelectMenu()
+                    .setCustomId('queueMenu')
+                    .setPlaceholder('Select song to play')
+                    .addOptions([
+                        {
+                            label: 'Song 1',
+                            description: 'Song 1 desc',
+                            value: 'first'
+                        },
+                        {
+                            label: 'Song 2',
+                            description: 'Second song desc',
+                            value: 'second'
+                        }
+                    ])
+            );
+        
+        let embed = new MessageEmbed()
+            .setTitle('queue')
 
-    getQueue(channelInfo) {
-
-        console.log(ChannelInfo.textChannel)
-        // ChannelInfo.textChannel.send(ChannelInfo.queue)
-    
+        message.reply({embeds: [embed], componenets: [row]})
     },
 
     check(message) {
@@ -330,21 +384,62 @@ module.exports = {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
 
+    async ytsearch(message, textChannel) {
+        try {
+            searchString = message.content
+        
+            var results = await searchYoutube(searchString.toString());
+            let i = 0;
+            let embed = new Discord.MessageEmbed();
+
+            embed.setAuthor(message.member.nickname || message.author.username, message.author.avatarURL());
+            embed.setDescription('Send a message with the number corresponding to the video you want');
+            
+            //console.dir(results)
+
+            results.forEach(result => {
+                i++;
+                let videoTitle = result.snippet.title
+                //console.log(videoTitle)
+                if (videoTitle.length > 69)
+                     { videoTitle = videoTitle.substring(0, 31) + "..." }
+
+                embed.addField('\u200b', i + '. [' + videoTitle + '](' + result.snippet.url + ')', false);
+            })
+            let buttonRow = new MessageActionRow();
+            emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+            
+            for (let j = 0; j < i; j++) {
+                buttonRow.addComponents(
+                    new MessageButton()
+                        .setCustomId((j).toString())
+                        .setLabel("")
+                        .setStyle("SECONDARY")
+                        .setEmoji(emojis[j])
+                );
+            }
+
+            textChannel.send({embeds: [embed], components: [buttonRow]}).then(sentMsg => {
+            });
+        }
+        catch (err) {
+            message.react('❌')
+            console.log(err)
+        }
+    }, 
+
     makeMessageButtons(message) {
 
-        console.log("making play buttons")
+        channelInfo = channelMap[message.guildId]
+
         let embed = new Discord.MessageEmbed();
+        let buttonRow = new MessageActionRow();
 
         embed.setAuthor(message.member.nickname || message.author.username, message.author.avatarURL());
-        embed.setDescription('Now Playing ');
-        
-        //console.dir(results)
-
-        let buttonRow = new MessageActionRow();
+        embed.setDescription('Now Playing - ' + channelInfo.nowPlaying.title);
         emojis = [["play","▶"], ["pause", "⏸"], ["stop", "⏹"], ["skip", "⏭"]]
         
         for (let j = 0; j < emojis.length; j++) {
-            console.log("button " + j + " added")
             buttonRow.addComponents(
                 new MessageButton()
                     .setCustomId((emojis[j][0]).toString())
@@ -366,10 +461,8 @@ module.exports = {
             //     } catch { }
             // })
         });
-        console.log("message sent")
     },
 }
-
 
 // /*        function shuffle(queue) {
 //             var j, x, i;

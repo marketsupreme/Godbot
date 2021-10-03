@@ -2,8 +2,21 @@
 const { Client, Intents } = require('discord.js');
 const { token } = require('./config.json');
 const fs = require("fs");
-const music = require("./commands/music.js")
-const funcCall = require("./functionCaller.js")
+const music = require("./commands/music.js");
+//const funcCall = require("./functionCaller.js")
+
+// console.log("This is pid " + process.pid);
+// process.on("uncaughtException", function () {
+// 		console.log("found uncaught exception")
+// 		var child = require("child_process").spawn(process.argv.shift(), process.argv, {
+// 				cwd: process.cwd(),
+// 				detached : true,
+// 				stdio: "inherit"
+// 		});
+// 		try {fs.writeFileSync('./most_recent_child_id.log', child.pid.toString())}
+// 		catch{console.log(err); return;} 
+// 		process.exit();
+// });
 
 // Create a new client instance
 const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS', 'GUILD_MESSAGE_REACTIONS'] });
@@ -44,7 +57,7 @@ client.on('interactionCreate', interaction => {
 				music.play(newMessage)
 			}
 			
-			interaction.message.delete().then(msg => console.log("Deleted embedded message"))
+			interaction.message.delete()
 			music.makeMessageButtons(interaction.message)
 		}
 
@@ -68,6 +81,10 @@ client.on('interactionCreate', interaction => {
 
 		}
 
+	}
+
+	if (interaction.isSelectMenu()) {
+		console.dir(interaction)
 	}
 });
 

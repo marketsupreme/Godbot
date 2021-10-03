@@ -1,0 +1,690 @@
+This is pid 3852
+Ready!
+found uncaught exception
+This is pid 9300
+Ready!
+found uncaught exception
+This is pid 3884
+Ready!
+found uncaught exception
+This is pid 7764
+Ready!
+found uncaught exception
+This is pid 8852
+Ready!
+found uncaught exception
+This is pid 14028
+Ready!
+found uncaught exception
+This is pid 1084
+Ready!
+found uncaught exception
+This is pid 3108
+Ready!
+found uncaught exception
+This is pid 13532
+Ready!
+found uncaught exception
+This is pid 5304
+Ready!
+found uncaught exception
+This is pid 6228
+Ready!
+found uncaught exception
+This is pid 13748
+Ready!
+found uncaught exception
+This is pid 7100
+Ready!
+found uncaught exception
+This is pid 13364
+Ready!
+found uncaught exception
+This is pid 13700
+Ready!
+found uncaught exception
+This is pid 3184
+Ready!
+found uncaught exception
+This is pid 5204
+Ready!
+found uncaught exception
+This is pid 2128
+Ready!
+found uncaught exception
+This is pid 552
+Ready!
+found uncaught exception
+This is pid 5816
+Ready!
+found uncaught exception
+This is pid 7144
+Ready!
+found uncaught exception
+This is pid 14708
+Ready!
+found uncaught exception
+This is pid 12528
+Ready!
+found uncaught exception
+This is pid 2164
+Ready!
+found uncaught exception
+This is pid 9752
+Ready!
+found uncaught exception
+This is pid 14252
+Ready!
+found uncaught exception
+This is pid 14684
+Ready!
+found uncaught exception
+This is pid 10940
+Ready!
+found uncaught exception
+This is pid 15252
+Ready!
+found uncaught exception
+This is pid 13324
+Ready!
+found uncaught exception
+This is pid 13784
+Ready!
+found uncaught exception
+This is pid 9160
+Ready!
+found uncaught exception
+This is pid 14528
+Ready!
+found uncaught exception
+This is pid 15148
+Ready!
+found uncaught exception
+This is pid 1840
+Ready!
+found uncaught exception
+This is pid 11536
+Ready!
+found uncaught exception
+This is pid 204
+Ready!
+found uncaught exception
+This is pid 8696
+Ready!
+found uncaught exception
+This is pid 7060
+Ready!
+found uncaught exception
+This is pid 14820
+Ready!
+found uncaught exception
+This is pid 10984
+Ready!
+found uncaught exception
+This is pid 12804
+Ready!
+found uncaught exception
+This is pid 14148
+Ready!
+found uncaught exception
+This is pid 8808
+Ready!
+found uncaught exception
+This is pid 5312
+Ready!
+found uncaught exception
+This is pid 1620
+Ready!
+found uncaught exception
+This is pid 12060
+Ready!
+found uncaught exception
+This is pid 15228
+Ready!
+found uncaught exception
+This is pid 2976
+Ready!
+found uncaught exception
+This is pid 13488
+Ready!
+found uncaught exception
+This is pid 1336
+Ready!
+found uncaught exception
+This is pid 13644
+Ready!
+found uncaught exception
+This is pid 3828
+Ready!
+found uncaught exception
+This is pid 2188
+Ready!
+found uncaught exception
+This is pid 2828
+Ready!
+found uncaught exception
+This is pid 10920
+Ready!
+found uncaught exception
+This is pid 14472
+Ready!
+found uncaught exception
+This is pid 14792
+Ready!
+found uncaught exception
+This is pid 12804
+Ready!
+found uncaught exception
+This is pid 15148
+Ready!
+found uncaught exception
+This is pid 14268
+Ready!
+found uncaught exception
+This is pid 252
+Ready!
+found uncaught exception
+This is pid 7040
+Ready!
+found uncaught exception
+This is pid 4260
+Ready!
+found uncaught exception
+This is pid 14980
+Ready!
+found uncaught exception
+This is pid 6400
+Ready!
+found uncaught exception
+This is pid 14556
+Ready!
+found uncaught exception
+This is pid 10456
+Ready!
+found uncaught exception
+This is pid 5984
+Ready!
+found uncaught exception
+This is pid 1108
+Ready!
+found uncaught exception
+This is pid 3448
+Ready!
+found uncaught exception
+This is pid 8844
+Ready!
+found uncaught exception
+This is pid 12304
+Ready!
+found uncaught exception
+This is pid 9088
+Ready!
+found uncaught exception
+This is pid 1604
+Ready!
+found uncaught exception
+This is pid 6256
+Ready!
+found uncaught exception
+This is pid 4592
+Ready!
+found uncaught exception
+This is pid 1620
+Ready!
+found uncaught exception
+This is pid 13620
+Ready!
+found uncaught exception
+This is pid 13796
+Ready!
+found uncaught exception
+This is pid 14564
+Ready!
+found uncaught exception
+This is pid 5996
+Ready!
+found uncaught exception
+This is pid 2668
+Ready!
+found uncaught exception
+This is pid 12676
+Ready!
+found uncaught exception
+This is pid 14224
+Ready!
+found uncaught exception
+This is pid 1452
+Ready!
+found uncaught exception
+This is pid 2600
+Ready!
+found uncaught exception
+This is pid 7280
+Ready!
+found uncaught exception
+This is pid 13568
+Ready!
+found uncaught exception
+This is pid 14048
+Ready!
+found uncaught exception
+This is pid 808
+Ready!
+found uncaught exception
+This is pid 12560
+Ready!
+found uncaught exception
+This is pid 7428
+Ready!
+found uncaught exception
+This is pid 11468
+Ready!
+found uncaught exception
+This is pid 14304
+Ready!
+found uncaught exception
+This is pid 10400
+Ready!
+found uncaught exception
+This is pid 4012
+Ready!
+found uncaught exception
+This is pid 3108
+Ready!
+found uncaught exception
+This is pid 14032
+Ready!
+found uncaught exception
+This is pid 4828
+Ready!
+found uncaught exception
+This is pid 808
+Ready!
+found uncaught exception
+This is pid 8852
+Ready!
+found uncaught exception
+This is pid 13736
+Ready!
+found uncaught exception
+This is pid 9212
+Ready!
+found uncaught exception
+This is pid 3572
+Ready!
+found uncaught exception
+This is pid 2600
+Ready!
+found uncaught exception
+This is pid 13620
+Ready!
+found uncaught exception
+This is pid 8120
+Ready!
+found uncaught exception
+This is pid 8808
+Ready!
+found uncaught exception
+This is pid 8868
+Ready!
+found uncaught exception
+This is pid 2888
+Ready!
+found uncaught exception
+This is pid 7816
+Ready!
+found uncaught exception
+This is pid 3792
+Ready!
+found uncaught exception
+This is pid 13496
+Ready!
+found uncaught exception
+This is pid 14812
+Ready!
+found uncaught exception
+This is pid 8428
+Ready!
+found uncaught exception
+This is pid 8820
+Ready!
+found uncaught exception
+This is pid 15300
+Ready!
+found uncaught exception
+This is pid 8920
+Ready!
+found uncaught exception
+This is pid 6616
+Ready!
+found uncaught exception
+This is pid 6196
+Ready!
+found uncaught exception
+This is pid 15256
+Ready!
+found uncaught exception
+This is pid 8636
+Ready!
+found uncaught exception
+This is pid 5304
+Ready!
+found uncaught exception
+This is pid 1704
+Ready!
+found uncaught exception
+This is pid 2504
+Ready!
+found uncaught exception
+This is pid 11712
+Ready!
+found uncaught exception
+This is pid 2352
+Ready!
+found uncaught exception
+This is pid 10744
+Ready!
+found uncaught exception
+This is pid 10908
+Ready!
+found uncaught exception
+This is pid 8476
+Ready!
+found uncaught exception
+This is pid 3196
+Ready!
+found uncaught exception
+This is pid 3828
+Ready!
+found uncaught exception
+This is pid 14420
+Ready!
+found uncaught exception
+This is pid 4896
+Ready!
+found uncaught exception
+This is pid 2916
+Ready!
+found uncaught exception
+This is pid 13544
+Ready!
+found uncaught exception
+This is pid 14140
+Ready!
+found uncaught exception
+This is pid 11520
+Ready!
+found uncaught exception
+This is pid 14168
+Ready!
+found uncaught exception
+This is pid 8252
+Ready!
+found uncaught exception
+This is pid 8448
+Ready!
+found uncaught exception
+This is pid 14596
+Ready!
+found uncaught exception
+This is pid 1604
+Ready!
+found uncaught exception
+This is pid 13516
+Ready!
+found uncaught exception
+This is pid 9164
+Ready!
+found uncaught exception
+This is pid 14304
+Ready!
+found uncaught exception
+This is pid 9720
+Ready!
+found uncaught exception
+This is pid 7612
+Ready!
+found uncaught exception
+This is pid 12400
+Ready!
+found uncaught exception
+This is pid 8456
+Ready!
+found uncaught exception
+This is pid 14436
+Ready!
+found uncaught exception
+This is pid 13384
+Ready!
+found uncaught exception
+This is pid 15008
+Ready!
+found uncaught exception
+This is pid 15216
+Ready!
+found uncaught exception
+This is pid 13404
+Ready!
+found uncaught exception
+This is pid 9164
+Ready!
+found uncaught exception
+This is pid 13488
+Ready!
+found uncaught exception
+This is pid 8016
+Ready!
+found uncaught exception
+This is pid 14772
+Ready!
+found uncaught exception
+This is pid 1452
+Ready!
+found uncaught exception
+This is pid 15240
+Ready!
+found uncaught exception
+This is pid 4292
+Ready!
+found uncaught exception
+This is pid 13840
+Ready!
+found uncaught exception
+This is pid 13836
+Ready!
+found uncaught exception
+This is pid 13452
+Ready!
+found uncaught exception
+This is pid 2668
+Ready!
+found uncaught exception
+This is pid 10856
+Ready!
+found uncaught exception
+This is pid 12236
+Ready!
+found uncaught exception
+This is pid 15164
+Ready!
+found uncaught exception
+This is pid 12192
+Ready!
+found uncaught exception
+This is pid 14776
+Ready!
+found uncaught exception
+This is pid 7068
+Ready!
+found uncaught exception
+This is pid 4324
+Ready!
+found uncaught exception
+This is pid 13940
+Ready!
+found uncaught exception
+This isidle
+making play buttons
+button 0 added
+button 1 added
+button 2 added
+button 3 added
+message sent
+making play buttons
+button 0 added
+button 1 added
+button 2 added
+button 3 added
+message sent
+This is pid 3108
+Ready!
+found uncaught exception
+This is pid 8388
+Ready!
+found uncaught exception
+This is pid 3140
+Ready!
+found uncaught exception
+This is pid 13444
+Ready!
+found uncaught exception
+This is pid 2460
+Ready!
+found uncaught exception
+This is pid 10380
+Ready!
+found uncaught exception
+This is pid 9872
+Ready!
+found uncaught exception
+This is pid 13612
+Ready!
+found uncaught exception
+This is pid 8808
+Ready!
+found uncaught exception
+This is pid 14796
+Ready!
+found uncaught exception
+This is pid 14588
+Ready!
+found uncaught exception
+This is pid 1628
+Ready!
+found uncaught exception
+This is pid 6256
+Ready!
+found uncaught exception
+This is pid 128
+Ready!
+found uncaught exception
+This is pid 7172
+Ready!
+found uncaught exception
+This is pid 11368
+Ready!
+found uncaught exception
+This is pid 15164
+Ready!
+found uncaught exception
+This is pid 13372
+Ready!
+found uncaught exception
+This is pid 14428
+Ready!
+found uncaught exception
+This is pid 11584
+Ready!
+found uncaught exception
+This is pid 14036
+Ready!
+found uncaught exception
+This is pid 13040
+Ready!
+found uncaught exception
+This is pid 12716
+Ready!
+found uncaught exception
+This is pid 6872
+Ready!
+found uncaught exception
+This is pid 13828
+Ready!
+found uncaught exception
+This is pid 1644
+Ready!
+found uncaught exception
+This is pid 3592
+Ready!
+found uncaught exception
+This is pid 2316
+Ready!
+found uncaught exception
+This is pid 4260
+Ready!
+found uncaught exception
+This is pid 8808
+Ready!
+found uncaught exception
+This is pid 2904
+Ready!
+found uncaught exception
+This is pid 14528
+Ready!
+found uncaught exception
+This is pid 11624
+Ready!
+found uncaught exception
+This is pid 3720
+Ready!
+found uncaught exception
+This is pid 7256
+Ready!
+found uncaught exception
+This is pid 13700
+Ready!
+found uncaught exception
+This is pid 7280
+Ready!
+found uncaught exception
+This is pid 12336
+Ready!
+found uncaught exception
+This is pid 748
+Ready!
+found uncaught exception
+This is pid 10940
+Ready!
+found uncaught exception
+This is pid 13324
+Ready!
+found uncaught exception
+This is pid 6632
+Ready!
+found uncaught exception
+This is pid 14504
+Ready!
+found uncaught exception
+This is pid 2904
+Ready!
+found uncaught exception
+This is pid 14884
+Ready!
+found uncaught exception
+This is pid 2280
+Ready!
+found uncaught exception
+Ready!
+idle
+making play buttons
+button 0 added
+button 1 added
+button 2 added
+button 3 added
+message sent
+making play buttons
+button 0 added
+button 1 added
+button 2 added
+button 3 added
+message sent
